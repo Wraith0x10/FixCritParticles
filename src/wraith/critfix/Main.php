@@ -15,20 +15,17 @@ class Main extends PluginBase implements Listener {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
     }
 
-    public function onDataPacketSend(DataPacketSendEvent $event): void{
-        foreach($event->getPackets() as $pk) {
-            if(!$pk instanceof ResourcePackStackPacket) {
+    public function onDataPacketSend(DataPacketSendEvent $dataPacketSendEvent): void{
+        foreach($dataPacketSendEvent->getPackets() as $packet) {
+            if(!$packet instanceof ResourcePackStackPacket) {
                 continue;
             }
 
-            $packStack = $pk->resourcePackStack;
-            foreach($packStack as $i => $resourcePack){
+            foreach($packet->resourcePackStack as $i => $resourcePack){
                 if($resourcePack->getPackId() === self::CHEMISTRY_PACK_ID) {
-                    unset($packStack[$i]);
+                    unset($packet->resourcePackStack[$i]);
                 }
             }
-
-            $pk->resourcePackStack = $packStack;
         }
     }
 }
