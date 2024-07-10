@@ -11,23 +11,25 @@ class Main extends PluginBase implements Listener {
 
     const CHEMISTRY_PACK_ID = "0fba4063-dba1-4281-9b89-ff9390653530";
 
-    public function onEnable(): void
-    {
+    public function onEnable(): void{
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
+        var_dump($this->getServer()->getResourcePackManager()->getPackById(self::CHEMISTRY_PACK_ID));
     }
 
-    public function onDataPacketSend(DataPacketSendEvent $event){
-        foreach($packets = $event->getPackets() as $pk) {
-            if($pk instanceof ResourcePackStackPacket){
-                $packStack = $pk->resourcePackStack;
-                foreach($packStack as $i => $resourcePack){
-                    $resourcePackID = $resourcePack->getPackId();
-                    if($resourcePackID === self::CHEMISTRY_PACK_ID) {
-                        unset($packStack[$i]);
-                    }
-                }
-                $pk->resourcePackStack = $packStack;
+    public function onDataPacketSend(DataPacketSendEvent $event): void{
+        foreach($event->getPackets() as $pk) {
+            if(!$pk instanceof ResourcePackStackPacket) {
+                continue;
             }
+
+            $packStack = $pk->resourcePackStack;
+            foreach($packStack as $i => $resourcePack){
+                if($resourcePack->getPackId() === self::CHEMISTRY_PACK_ID) {
+                    unset($packStack[$i]);
+                }
+            }
+
+            $pk->resourcePackStack = $packStack;
         }
     }
 }
